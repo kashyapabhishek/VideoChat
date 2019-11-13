@@ -1,0 +1,71 @@
+<html>
+
+<body>
+    <label for="">Your ID: </label>
+    <br/>
+    <textarea name="yourid" id="yourid" cols="30" rows="10"></textarea>
+    <br/>
+    <label for="">Other id:</label>
+    <br/>
+    <textarea name="otherid" id="otherid" cols="30" rows="10"></textarea>
+    <br/>
+    <button id="connect">Connect</button>
+
+    <br/>
+
+    <label for="">Enter your message: </label>
+    <br/>
+    <textarea name="" id="yourmessage" cols="30" rows="10"></textarea>
+    <br/>
+    <button id="send">send</button>
+    <br/>
+    <pre id="message"></pre>
+
+
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/simple-peer/9.6.0/simplepeer.min.js"></script>
+    <script>
+        navigator.getUserMedia = (navigator.getUserMedia ||
+            navigator.webkitGetUserMedia ||
+            navigator.mozGetUserMedia ||
+            navigator.msGetUserMedia);
+        navigator.getUserMedia({ video: true, audio: false }, function (stream) {
+
+            var peer = new SimplePeer({
+                initiator: location.hash == '#init',
+                trickle: false,
+                stream: stream
+            });
+
+            peer.on('signal', function (data) {
+                document.getElementById('yourid').value = JSON.stringify(data);
+            });
+
+            document.getElementById('connect').addEventListener('click', function () {
+                var orderid = JSON.parse(document.getElementById('otherid').value)
+                peer.signal(orderid)
+            });
+
+            document.getElementById('send').addEventListener('click', function () {
+                var yourmessage = document.getElementById('yourmessage').value
+                peer.send(yourmessage);
+            });
+
+            peer.on('data', function (data) {
+                document.getElementById('message').textContent += data + '\n'
+            });
+            peer.on('stream', function (stream) {
+                var video = document.createElement('video')
+                document.body.appendChild(video)
+                video.srcObject = stream
+                video.play();
+            })
+        },
+            function (err) {
+                console.log(err);
+            });
+    </script>
+</body>
+
+</html>
