@@ -1,5 +1,12 @@
 "use strict";
 
+if(location.href.includes('?')){
+  let params =  location.href.split('?')[1].split('=')[1];
+  sessionStorage.setItem('localusername',params);
+}
+let videos = false;
+let audios = true;
+
 //------------------------ WebRT single-peer End-------------------------------//
 
  ////////////////// make singalR connection ////////////////////////////////
@@ -17,7 +24,7 @@ navigator.getUserMedia = (navigator.getUserMedia ||
     navigator.mozGetUserMedia ||
     navigator.msGetUserMedia);
   
-  navigator.getUserMedia({ video: true, audio: true },gotMedia, () => {});
+  navigator.getUserMedia({ video: videos, audio: audios },gotMedia, () => {});
 
 
   async function gotMedia(stream){
@@ -38,8 +45,11 @@ navigator.getUserMedia = (navigator.getUserMedia ||
     });
 
     peer.on('stream', function (stream) {
+      document.getElementById('tempvideo').remove();
         var video = document.createElement('video')
         video.setAttribute("style", "width: 100% !important");
+        video.controls = true;
+        video.poster = "~/images/callingimage.png";
         document.getElementById('videolink').appendChild(video);
         video.srcObject = stream
         video.play();
@@ -69,14 +79,31 @@ function myFunction() {
     return null;
   }
   
-  document.getElementById("makecall").addEventListener("click", function (event) {
+  document.getElementById("makevideocall").addEventListener("click", function (event) {
+    var video = true;
+    var audio = true;
     var returnMsg = myFunction();
     if(returnMsg != null)
     {
       sessionStorage.setItem("caller","yes");        
       sessionStorage.setItem("callerusername",returnMsg);
       location.href = '/#init';
-      location.reload();
+      //location.reload();
+    }else{
+      alert("Enter the reciver id");
+    }
+    event.preventDefault();
+  });
+  
+  document.getElementById('makecall').addEventListener('click', function(event){
+      audios = true;
+      var returnMsg = myFunction();
+    if(returnMsg != null)
+    {
+      sessionStorage.setItem("caller","yes");        
+      sessionStorage.setItem("callerusername",returnMsg);
+      location.href = '/#init';
+      //location.reload();
     }else{
       alert("Enter the reciver id");
     }
@@ -85,10 +112,10 @@ function myFunction() {
 
   
 
-document.getElementById('loginbutton').addEventListener('click', function(){
-   var userid =  myFunction();
-   sessionStorage.setItem("localusername", userid);
-   document.getElementById('user').innerHTML = userid;
+// document.getElementById('loginbutton').addEventListener('click', function(){
+//    var userid =  myFunction();
+//    sessionStorage.setItem("localusername", userid);
+//    document.getElementById('user').innerHTML = userid;
 
-})
+// })
   
